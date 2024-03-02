@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  natidb:
+    image: mongo:5.0.0
+    container_name: Room-Talk-DB
+    ports:
+      - 27017:27017
+    volumes:
+      - ./mongo:/data/db
