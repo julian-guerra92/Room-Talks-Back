@@ -5,6 +5,11 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DataServiceModule } from './data-service/data-service.module';
 import { AuthModule } from './auth/auth.module';
+import { PrivateChatModule } from './private-chat/private-chat.module';
+import { PublicChatModule } from './public-chat/public-chat.module';
+import { UsersModule } from './users/users.module';
+import { EventsGateway } from './events/events.gateway';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
@@ -13,9 +18,13 @@ import { AuthModule } from './auth/auth.module';
       envFilePath: '.env',
     }),
     DataServiceModule,
-    AuthModule
+    AuthModule,
+    PrivateChatModule,
+    PublicChatModule,
+    UsersModule,
+    EventsModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, EventsGateway],
 })
 export class AppModule { }

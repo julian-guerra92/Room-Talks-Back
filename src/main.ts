@@ -27,7 +27,7 @@ async function bootstrap() {
 
   await app.listen(PORT, () => {
     logger.log(`Ejecutándose en puerto: ${PORT}`);
-    logger.log(`URL de conexión: http://localhost:${PORT}/`);
+    logger.log(`URL de conexión: ws://localhost:${PORT}/`);
   });
 
   
