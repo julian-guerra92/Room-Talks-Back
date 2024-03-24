@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Model } from "mongoose";
 
 import { UserRepositoryInterface } from "../interface/user-repository";

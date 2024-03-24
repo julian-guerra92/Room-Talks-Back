@@ -10,6 +10,7 @@ import { PublicChatModule } from './public-chat/public-chat.module';
 import { UsersModule } from './users/users.module';
 import { EventsGateway } from './events/events.gateway';
 import { EventsModule } from './events/events.module';
+import { PrivateChatService } from './pirvate-chat/pirvate-chat.service';
 
 @Module({
   imports: [
@@ -24,7 +25,16 @@ import { EventsModule } from './events/events.module';
     UsersModule,
     EventsModule
   ],
-  controllers: [AppController],
-  providers: [AppService, EventsGateway],
+  controllers: [
+  AppController,
+  PrivateChatController,
+  PublicChatController
+  ],
+  providers: [
+  AppService,
+  EventsGateway,
+  PrivateChatService,
+  PublicChatService
+  ],
 })
 export class AppModule { }
