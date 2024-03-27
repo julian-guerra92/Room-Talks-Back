@@ -8,7 +8,6 @@ import { AuthModule } from './auth/auth.module';
 import { PrivateChatModule } from './private-chat/private-chat.module';
 import { PublicChatModule } from './public-chat/public-chat.module';
 import { UsersModule } from './users/users.module';
-import { EventsGateway } from './events/events.gateway';
 import { EventsModule } from './events/events.module';
 
 @Module({
@@ -25,6 +24,6 @@ import { EventsModule } from './events/events.module';
     EventsModule
   ],
   controllers: [AppController],
-  providers: [AppService, EventsGateway],
+  providers: [AppService],
 })
 export class AppModule { }
