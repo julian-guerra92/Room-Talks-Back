@@ -1,17 +1,16 @@
-/* eslint-disable prettier/prettier */
-import { Controller, Get, Post, Body, Param, Delete, HttpStatus, Res, Put } from '@nestjs/common';
-import { PublicChatService } from 'src/public-chat/services/public-chat-service/public-chat.service';
-import { User} from 'src/data-service/models//user';
-import { Response } from 'express';
-import { ClientProxy } from '@nestjs/microservices';
 import { Inject } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
+import { Controller, Get, Post, Body, Param, Delete, HttpStatus, Res, Put } from '@nestjs/common';
+import { Response } from 'express';
+
+import { PublicChatService } from './public-chat.service';
+import { User} from 'src/data-service/models//user';
 import { Chat } from 'src/data-service/models/chat';
 
 @Controller('public-chat')
 export class PublicChatController {
   constructor(
     private publicChatService: PublicChatService,
-    @Inject('CHAT_SERVICE') private readonly clientProxy: ClientProxy,
   ) {}
 
   @Post()

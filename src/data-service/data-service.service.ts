@@ -2,8 +2,8 @@ import { Injectable, OnApplicationBootstrap } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 
-import { DataServiceInterface } from "./interface/data-service";
-import { UserRepository } from "./repositories/user-repository";
+import { DataServiceInterface } from "./interface/data-service.interface";
+import { UserRepository } from "./repositories/user.repository";
 import { User } from "./models/user";
 import { Chat } from "./models/chat";
 import { Message } from "./models/message";
@@ -13,9 +13,9 @@ import { MessageRepository } from "./repositories/message.repository";
 @Injectable()
 export class DataServiceAdpater implements DataServiceInterface, OnApplicationBootstrap {
 
-   user: UserRepository;
-   chat: ChatRepository;
-   message: MessageRepository;
+   users: UserRepository;
+   chats: ChatRepository;
+   messages: MessageRepository;
 
    constructor(
       @InjectModel('User')
@@ -29,8 +29,8 @@ export class DataServiceAdpater implements DataServiceInterface, OnApplicationBo
    ) { }
 
    onApplicationBootstrap() {
-      this.user = new UserRepository(this.UserRepository);
-      this.chat = new this.ChatRepository(this.ChatRepository);
-      this.message = new this.MessageRepository(this.MessageRepository);
+      this.users = new UserRepository(this.UserRepository);
+      this.chats = new ChatRepository(this.ChatRepository);
+      this.messages = new MessageRepository(this.MessageRepository);
    }
 }

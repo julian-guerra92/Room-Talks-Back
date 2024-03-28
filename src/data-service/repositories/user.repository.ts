@@ -1,10 +1,9 @@
-/* eslint-disable prettier/prettier */
 import { Model } from "mongoose";
+import { InternalServerErrorException } from "@nestjs/common";
 
-import { UserRepositoryInterface } from "../interface/user-repository";
+import { UserRepositoryInterface } from "../interface/user-repository.interface";
 import { User } from "../models/user";
 import { MongoGenericRespository } from "./mongo-generic-repository";
-import { InternalServerErrorException } from "@nestjs/common";
 
 
 export class UserRepository extends MongoGenericRespository<User> implements UserRepositoryInterface {

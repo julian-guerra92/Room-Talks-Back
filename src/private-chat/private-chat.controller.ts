@@ -1,8 +1,6 @@
-/* eslint-disable prettier/prettier */
-import { Controller, Post, Body, Param, Inject, Res, HttpStatus, Delete, Get, Put} from '@nestjs/common';
-import { PrivateChatService } from '../services/private-chat.service';
+import { Controller, Post, Body, Param, Res, HttpStatus, Delete, Get, Put } from '@nestjs/common';
+import { PrivateChatService } from './private-chat.service';
 import { User } from 'src/data-service/models/user';
-import { ClientProxy } from '@nestjs/microservices';
 import { Response } from 'express';
 import { Chat } from 'src/data-service/models/chat';
 
@@ -10,8 +8,7 @@ import { Chat } from 'src/data-service/models/chat';
 export class PrivateChatController {
   constructor(
     private privateChatService: PrivateChatService,
-    @Inject('CHAT_SERVICE') private readonly clientProxy: ClientProxy,
-  ) {}
+  ) { }
 
   @Post()
   async createPrivateChat(

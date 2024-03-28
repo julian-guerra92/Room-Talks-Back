@@ -1,15 +1,11 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import { PublicChatController } from './controllers/public-chat.controller';
-import { PublicChatService } from './services/public-chat.service';
-import { PublicChatRoom, PublicChatRoomSchema } from './models/public-chat-room';
-import { MessageControllerController } from './controllers/message-controller/message-controller.controller';
+import { PublicChatController } from './public-chat.controller';
+import { PublicChatService } from './public-chat.service';
+import { DataServiceModule } from 'src/data-service/data-service.module';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([{ name: PublicChatRoom.name, schema: PublicChatRoomSchema }]),
-  ],
-  controllers: [PublicChatController, MessageControllerController],
+  controllers: [PublicChatController],
   providers: [PublicChatService],
+  imports: [DataServiceModule]
 })
 export class PublicChatModule {}

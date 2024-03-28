@@ -1,12 +1,11 @@
-/* eslint-disable prettier/prettier */
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { DataServiceInterface } from 'src/data-service/interface/data-service.interface';
 import { Chat } from 'src/data-service/models/chat';
 import { User } from 'src/data-service/models/user';
-import { ChatRepository } from 'src/data-service/repositories/chat.repository';
 
 @Injectable()
-export class PrivateChatService{
-  constructor(private chatRepository: ChatRepository) {}
+export class PrivateChatService {
+  constructor(private readonly dataService: DataServiceInterface) { }
 
   async createPrivateChat(currentUser: User, otherUser: User): Promise<Chat> {
     const chatData: Chat = new Chat();
@@ -14,12 +13,12 @@ export class PrivateChatService{
     chatData.type = 'private';
     chatData.participants = [currentUser, otherUser];
 
-    const createdChat = await this.chatRepository.add(chatData);
+    const createdChat = await this.dataService.chats.add(chatData);
     return createdChat;
   }
 
   async deleteConversation(chatId: string, userId: string): Promise<void> {
-    const chat = await this.chatRepository.getById(chatId);
+    const chat = await this.dataService.chats.getById(chatId);
 
     if (!chat) {
       throw new NotFoundException('Chat not found');
@@ -33,16 +32,16 @@ export class PrivateChatService{
       throw new NotFoundException('User is not a participant of the chat.');
     }
 
-    await this.chatRepository.deleteById(chatId);
+    await this.dataService.chats.deleteById(chatId);
   }
 
   async getPrivateChatById(chatId: string): Promise<Chat> {
-    const chat = await this.chatRepository.getById(chatId);
+    const chat = await this.dataService.chats.getById(chatId);
     return chat;
   }
 
   async updatePrivateChat(chatId: string, updatedData: Partial<Chat>): Promise<Chat> {
-    const chat = await this.chatRepository.getById(chatId);
+    const chat = await this.dataService.chats.getById(chatId);
 
     if (!chat) {
       throw new NotFoundException('Chat not found');
@@ -52,7 +51,7 @@ export class PrivateChatService{
     Object.assign(chat, updatedData);
 
     // Guardar el chat actualizado
-    const updatedChat = await this.chatRepository.updateById(chatId, chat);
+    const updatedChat = await this.dataService.chats.updateById(chatId, chat);
     return updatedChat;
-}
+  }
 }

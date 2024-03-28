@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { Controller, Get, Post, Body, Param, Delete, HttpStatus, Res, NotFoundException} from '@nestjs/common';
-import { MessageService } from 'src/public-chat/services/message-service/message-service';
+import { MessageService } from './message.service';
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { Response } from 'express';
@@ -30,8 +30,8 @@ export class MessageController {
     @Res() res: Response,
   ): Promise<void> {
     try {
-      const messages = await this.messageService.getMessagesByChat(chatId);
-      res.status(HttpStatus.OK).json(messages);
+      //const messages = await this.messageService.getMessagesByChat(chatId);
+      //res.status(HttpStatus.OK).json(messages);
     } catch (error) {
       res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)

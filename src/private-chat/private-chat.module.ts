@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
-import { PrivatechatController } from './privatechat/privatechat.controller';
+
 import { PrivateChatController } from './private-chat.controller';
-import { MessageControllerController } from './controllers/message-controller/message-controller.controller';
 import { PrivateChatService } from './private-chat.service';
-import { PrivateChatController } from './private-chat.controller';
-import { PrivateChatController } from './private-chat.controller';
+import { DataServiceModule } from 'src/data-service/data-service.module';
 
 @Module({
-  controllers: [PrivatechatController, PrivateChatController, MessageControllerController],
-  providers: [PrivateChatService]
+  controllers: [PrivateChatController],
+  providers: [PrivateChatService],
+  imports: [DataServiceModule]
 })
 export class PrivateChatModule {}

@@ -2,7 +2,7 @@ import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { MongooseModule } from "@nestjs/mongoose";
 
-import { DataServiceInterface } from './interface/data-service';
+import { DataServiceInterface } from './interface/data-service.interface';
 import { DataServiceAdpater } from "./data-service.service";
 import { User, UserSchema } from "./models/user";
 import { Chat, ChatSchema } from "./models/chat";

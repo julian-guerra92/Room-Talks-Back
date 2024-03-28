@@ -1,12 +1,12 @@
 /* eslint-disable prettier/prettier */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Chat } from 'src/data-service/models/chat';
-import { ChatRepository } from 'src/data-service/repositories/chat.repository';
 import { User } from 'src/data-service/models/user';
+import { DataServiceInterface } from 'src/data-service/interface/data-service.interface';
 
 @Injectable()
 export class PublicChatService {
-  constructor( private readonly chatRepository: ChatRepository) {}
+  constructor( private readonly dataService: DataServiceInterface) {}
 
   async createPublicChat(name: string, participants: User[]): Promise<Chat> {
     const chatData: Chat = new Chat();
@@ -14,27 +14,27 @@ export class PublicChatService {
     chatData.type = 'public';
     chatData.participants = participants;
 
-    const createdChat = await this.chatRepository.add(chatData);
+    const createdChat = await this.dataService.chats.add(chatData);
     return createdChat;
   }
 
   async getPublicChatById(chatId: string): Promise<Chat> {
-    const chat = await this.chatRepository.getById(chatId);
+    const chat = await this.dataService.chats.getById(chatId);
     return chat;
   }
 
   async deletePublicChat(chatId: string): Promise<void> {
-    await this.chatRepository.deleteById(chatId);
+    await this.dataService.chats.deleteById(chatId);
   }
 
   async updatePublicChat(chatId: string, updatedData: Partial<Chat>): Promise<Chat> {
-    const chat = await this.chatRepository.getById(chatId);
+    const chat = await this.dataService.chats.getById(chatId);
     if (!chat) {
       throw new NotFoundException('Chat not found.');
     }
 
     Object.assign(chat, updatedData); // Actualizar todas las propiedades del chat con los datos actualizados
-    const updatedChat = await this.chatRepository.updateById(chatId, chat);
+    const updatedChat = await this.dataService.chats.updateById(chatId, chat);
     return updatedChat;
   }
   

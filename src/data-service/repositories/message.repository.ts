@@ -1,16 +1,15 @@
-/* eslint-disable prettier/prettier */
 import { InternalServerErrorException } from '@nestjs/common';
 import { Message } from 'src/data-service/models/message';
 import { Model } from 'mongoose';
 import { MongoGenericRespository } from './mongo-generic-repository';
-import { MessageRepositoryInterface } from '../interface/MessageRepositoryInterface';
+import { MessageRepositoryInterface } from '../interface/message-repository.interface';
 
-// eslint-disable-next-line prettier/prettier
-export class MessageRepository  extends MongoGenericRespository<Message> implements MessageRepositoryInterface {
- 
+export class MessageRepository extends MongoGenericRespository<Message> implements MessageRepositoryInterface {
+
   constructor(repository: Model<Message>) {
     super(repository);
   }
+
   async getMessageByChatId(chatId: string): Promise<Message> {
     try {
       const documents = await this.repository.findOne({ chatId });
@@ -23,4 +22,5 @@ export class MessageRepository  extends MongoGenericRespository<Message> impleme
       );
     }
   }
+
 }
