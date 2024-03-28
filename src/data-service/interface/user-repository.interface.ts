@@ -1,5 +1,5 @@
 import { User } from "../models/user";
-import { GenericRepositoryInterface } from "./generic-repository";
+import { GenericRepositoryInterface } from "./generic-repository.interface";
 
 
 export interface UserRepositoryInterface extends GenericRepositoryInterface<User> {

@@ -3,7 +3,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { AuthServiceInterface } from "./interface/auth-service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { User } from "src/data-service/models/user";
-import { DataServiceInterface } from "src/data-service/interface/data-service";
+import { DataServiceInterface } from "src/data-service/interface/data-service.interface";
 
 
 @Injectable()
@@ -17,7 +17,7 @@ export class AuthServiceAdapter implements AuthServiceInterface {
 
    async createUser(createUser: CreateUserDto): Promise<User> {
       this.logger.log(`Creating user: ${createUser.name}`);
-      const user = await this.dataService.user.add(createUser);
+      const user = await this.dataService.users.add(createUser);
       return user;
    }
 
