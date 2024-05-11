@@ -1,7 +1,7 @@
 import { InternalServerErrorException, Logger } from "@nestjs/common";
 import { Model } from "mongoose";
 
-import { GenericRepositoryInterface } from "../interface/generic-repository";
+import { GenericRepositoryInterface } from "../interface/generic-repository.interface";
 
 
 export class MongoGenericRespository<T> implements GenericRepositoryInterface<T> {

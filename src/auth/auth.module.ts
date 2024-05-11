@@ -10,7 +10,6 @@ const AuthService = {
    useClass: AuthServiceAdapter
 }
 
-
 @Module({
    controllers: [AuthController],
    providers: [AuthService],
