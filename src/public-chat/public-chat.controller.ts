@@ -1,16 +1,14 @@
-import { Inject } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
 import { Controller, Get, Post, Body, Param, Delete, HttpStatus, Res, Put } from '@nestjs/common';
 import { Response } from 'express';
 
-import { PublicChatService } from './public-chat.service';
 import { User} from 'src/data-service/models//user';
 import { Chat } from 'src/data-service/models/chat';
+import { PublicChatServiceInterface } from './interface/public-chat.interface';
 
 @Controller('public-chat')
 export class PublicChatController {
   constructor(
-    private publicChatService: PublicChatService,
+    private publicChatService: PublicChatServiceInterface,
   ) {}
 
   @Post()

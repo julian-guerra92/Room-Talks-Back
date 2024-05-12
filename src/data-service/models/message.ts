@@ -1,18 +1,17 @@
 /* eslint-disable prettier/prettier */
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { HydratedDocument } from 'mongoose';
+
+export type MessageDocument = HydratedDocument<Message>;
 
 @Schema()
-export class Message extends Document{
+export class Message {
     @Prop()
     content: string;
-
     @Prop()
     senderId: string;
-
     @Prop()
     IdChat: string;
-
     @Prop()
     timestamp: Date;
 }

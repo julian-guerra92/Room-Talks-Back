@@ -10,10 +10,10 @@ export class MessageRepository extends MongoGenericRespository<Message> implemen
     super(repository);
   }
 
-  async getMessageByChatId(chatId: string): Promise<Message> {
+  async getMessagesByChatId(chatId: string): Promise<Message[]> {
     try {
-      const documents = await this.repository.findOne({ chatId });
-      return documents;
+      const messages = await this.repository.find({ chatId });
+      return messages;
     } catch (error) {
       this.logger.log(error);
       this.logger.error(`Error al obtener mensajes por chat`, '');

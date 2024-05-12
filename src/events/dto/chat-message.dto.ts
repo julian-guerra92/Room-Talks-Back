@@ -5,7 +5,8 @@ export interface ChatMessageRequesrDto {
 }
 
 export interface ChatMessageResponseDto {
-   message: string;
-   userId: string;
-   chatId: string;
+   status: string;
+   message?: string;
+   userId?: string;
+   chatId?: string;
 }

@@ -1,48 +1,45 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InternalServerErrorException } from '@nestjs/common';
+import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 
 import { Message } from 'src/data-service/models/message';
 import { DataServiceInterface } from 'src/data-service/interface/data-service.interface';
+import { MessageServiceInterface } from './interface/message-service';
+import { MessageDto } from './dto/message.dto';
 
 @Injectable()
-export class MessageService {
+export class MessageServiceAdapter implements MessageServiceInterface {
+
+  logger: Logger = new Logger('MessageService');
+
   constructor(
     private readonly dataService: DataServiceInterface
   ) { }
 
-  async createMessage(content: string, senderId: string): Promise<Message> {
-    const message: Message = new Message();
-    message.id = 'generatedId';
-    message.content = content;
-    message.senderId = senderId;
-    message.timestamp = new Date();
-
+  async saveMessage(messageDto: MessageDto,): Promise<Message> {
+    this.logger.log('Iniciando proceso saveMessage');
     try {
-      const createdMessage = await this.dataService.messages.add(message);
+      const chat = await this.dataService.chats.getById(messageDto.IdChat);
+      if (!chat) {
+        throw new NotFoundException('Chat not found');
+      }
+      const createdMessage = await this.dataService.messages.add(messageDto);
+      this.logger.log('Mensaje almacendo con éxito: ', createdMessage);
       return createdMessage;
     } catch (error) {
-      throw new InternalServerErrorException('Error al crear el mensaje.');
+      this.logger.error('Error en saveMessage', error);
     }
   }
 
-  // async getMessagesByChat(chatId: string): Promise<Message[]> {
-  //   const chatMessages = await this.dataService.messages.getMessageByChatId(chatId);
-  //   //return chatMessages.filter((message) => message.content.includes(chatId));
-  // }
-
-  async deleteMessage(messageId: string): Promise<void> {
-    const messageToDelete = this.dataService.messages.getById(messageId);
-    if (!messageToDelete) {
-      throw new NotFoundException('Message not found');
+  async getMessagesByChat(chatId: string): Promise<MessageDto[]> {
+    try {
+      const chat = await this.dataService.chats.getById(chatId);
+      if (!chat) {
+        throw new NotFoundException('Chat not found');
+      }
+      const chatMessages = await this.dataService.messages.getMessagesByChatId(chatId);
+      return chatMessages;
+    } catch (error) {
+      this.logger.error('Error en getMessagesByChat', error);
     }
-    this.dataService.messages.deleteById(messageId);
   }
 
-  async getMessageById(messageId: string): Promise<Message> {
-    const message = await this.dataService.messages.getById(messageId);
-    if (!message) {
-      throw new NotFoundException('Message not found.');
-    }
-    return message;
-  }
 }

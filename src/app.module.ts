@@ -7,6 +7,7 @@ import { PrivateChatModule } from './private-chat/private-chat.module';
 import { PublicChatModule } from './public-chat/public-chat.module';
 import { UsersModule } from './users/users.module';
 import { EventsModule } from './events/events.module';
+import { MessageModule } from './message/message.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { EventsModule } from './events/events.module';
     PrivateChatModule,
     PublicChatModule,
     UsersModule,
+    MessageModule,
     EventsModule
   ],
 })
