@@ -1,11 +1,13 @@
 /* eslint-disable prettier/prettier */
 import { Injectable, NotFoundException } from '@nestjs/common';
+
 import { Chat } from 'src/data-service/models/chat';
 import { User } from 'src/data-service/models/user';
 import { DataServiceInterface } from 'src/data-service/interface/data-service.interface';
+import { PublicChatServiceInterface } from './interface/public-chat.interface';
 
 @Injectable()
-export class PublicChatService {
+export class PublicChatServiceAdapter implements PublicChatServiceInterface {
   constructor( private readonly dataService: DataServiceInterface) {}
 
   async createPublicChat(name: string, participants: User[]): Promise<Chat> {

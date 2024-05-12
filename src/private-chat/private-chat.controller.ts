@@ -1,31 +1,21 @@
 import { Controller, Post, Body, Param, Res, HttpStatus, Delete, Get, Put } from '@nestjs/common';
-import { PrivateChatService } from './private-chat.service';
-import { User } from 'src/data-service/models/user';
 import { Response } from 'express';
+
+import { User } from 'src/data-service/models/user';
 import { Chat } from 'src/data-service/models/chat';
+import { PrivateChatServiceInterface } from './interface/private-chat.interface';
+import { PrivateChatDto } from './dto/private-chat.dto';
 
 @Controller('private-chat')
 export class PrivateChatController {
   constructor(
-    private privateChatService: PrivateChatService,
+    private privateChatService: PrivateChatServiceInterface,
   ) { }
 
   @Post()
-  async createPrivateChat(
-    @Body() participants: User[],
-    @Res() res: Response,
-  ): Promise<void> {
-    try {
-      const chat = await this.privateChatService.createPrivateChat(
-        participants[0],
-        participants[1],
-      );
-      res.status(HttpStatus.CREATED).json(chat);
-    } catch (error) {
-      res
-        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ error: error.message });
-    }
+  async createPrivateChat(@Body() privateChatDto: PrivateChatDto,): Promise<Chat> {
+      const chat = await this.privateChatService.createPrivateChat(privateChatDto);
+      return chat;
   }
 
   @Delete(':chatId/:userId')

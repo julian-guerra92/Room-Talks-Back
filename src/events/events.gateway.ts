@@ -13,6 +13,11 @@ import { Server, Socket } from 'socket.io'
 import { ChatConnectionRequestDto, ChatConnectionResponseDto } from './dto/chat-connection.dto';
 import { QueryConecctionDto } from './dto/ws-connection.dto';
 import { ChatMessageRequesrDto, ChatMessageResponseDto } from './dto/chat-message.dto';
+import { PublicChatServiceInterface } from 'src/public-chat/interface/public-chat.interface';
+import { PrivateChatServiceInterface } from 'src/private-chat/interface/private-chat.interface';
+import { Chat } from 'src/data-service/models/chat';
+import { MessageServiceInterface } from 'src/message/interface/message-service';
+import { MessageDto } from 'src/message/dto/message.dto';
 
 @WebSocketGateway({ cors: true })
 export class EventsGateway implements OnModuleInit, OnGatewayConnection, OnGatewayDisconnect {
@@ -20,6 +25,12 @@ export class EventsGateway implements OnModuleInit, OnGatewayConnection, OnGatew
   @WebSocketServer()
   server: Server
   logger: Logger = new Logger('EventsGateway');
+
+  constructor(
+    private publicChatService: PublicChatServiceInterface,
+    private privateChatService: PrivateChatServiceInterface,
+    private privateMesssageService: MessageServiceInterface
+  ) { }
 
   onModuleInit() {
     this.server.on('connection', (client: Socket) => {
@@ -40,23 +51,34 @@ export class EventsGateway implements OnModuleInit, OnGatewayConnection, OnGatew
 
   @SubscribeMessage('chat-connection')
   async handleEventChatConnection(@MessageBody() body: ChatConnectionRequestDto, @ConnectedSocket() socket: Socket): Promise<void> {
+    let chat: Chat;
+    let response: ChatConnectionResponseDto = { statusConnection: 'fail' };
+    try {
+      if (body.type === 'private') {
+        chat = await this.privateChatService.getPrivateChatById(body.chatId);
+      }
+      if (body.type === 'public') {
+        chat = await this.publicChatService.getPublicChatById(body.chatId);
+      }
 
-    //TODO: Ejecutar proceso para validar si el chat existe
+      if (chat) {
+        response = {
+          statusConnection: 'success',
+          userId: socket.data.userId,
+          chatId: body.chatId
+        }
+        socket.join(body.chatId);
+        socket.data.chatId = body.chatId;
+        this.logger.log(`New chat connection: ${JSON.stringify(socket.data)}`);
+      }
 
-    socket.join(body.chatId);
-    socket.data.chatId = body.chatId;
-    this.logger.log(`New chat connection: ${JSON.stringify(socket.data)}`);
-
-    const response: ChatConnectionResponseDto = {
-      statusConnection: 'success',
-      userId: socket.data.userId,
-      chatId: body.chatId
+      this.server.to(body.chatId).emit('chat-connection', {
+        event: 'chat-connection',
+        data: response
+      });
+    } catch (error) {
+      this.logger.error(`Error al procesar evento chat-connection`);
     }
-
-    this.server.to(body.chatId).emit('chat-connection', {
-      event: 'chat-connection',
-      data: response
-    });
   }
 
   @SubscribeMessage('chat-disconnection')
@@ -67,17 +89,30 @@ export class EventsGateway implements OnModuleInit, OnGatewayConnection, OnGatew
 
   @SubscribeMessage('chat-message')
   async handleEventChatMessage(@MessageBody() body: ChatMessageRequesrDto, @ConnectedSocket() socket: Socket): Promise<void> {
-
-    const response: ChatMessageResponseDto = {
-      message: body.message,
-      userId: socket.data.userId,
-      chatId: socket.data.chatId
+    const newMessage: MessageDto = {
+      content: body.message,
+      IdChat: socket.data.chatId,
+      senderId: socket.data.userId,
+      timestamp: new Date()
     }
-
-    this.server.to(socket.data.chatId).emit('chat-message', {
-      event: 'chat-message',
-      data: response
-    });
+    let response: ChatMessageResponseDto = { status: 'fail' };
+    try {
+      const result = await this.privateMesssageService.saveMessage(newMessage);
+      if (result) {
+        response = {
+          status: 'success',
+          message: body.message,
+          userId: socket.data.userId,
+          chatId: socket.data.chatId
+        }
+      }
+      this.server.to(socket.data.chatId).emit('chat-message', {
+        event: 'chat-message',
+        data: response
+      });
+    } catch (error) {
+      this.logger.error(`Error al procesar evento chat-message`);
+      this.logger.error(error);
+    }
   }
-
 }

@@ -1,8 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { User } from 'src/data-service/models/user';
-import { HydratedDocument } from "mongoose";
-
-export type CatDocument = HydratedDocument<Chat>;
 
 export type ChatType = 'private' | 'public';
 
