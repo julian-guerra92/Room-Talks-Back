@@ -3,19 +3,25 @@ import { Response } from 'express';
 
 import { User } from 'src/data-service/models/user';
 import { Chat } from 'src/data-service/models/chat';
-import { PrivateChatServiceInterface } from './interface/private-chat.interface';
-import { PrivateChatDto } from './dto/private-chat.dto';
+import { ChatServiceInterface } from './interface/chat.interface';
+import { PrivateChatDto, PublicChatDto } from './dto/chat.dto';
 
-@Controller('private-chat')
-export class PrivateChatController {
+@Controller('chat')
+export class ChatController {
   constructor(
-    private privateChatService: PrivateChatServiceInterface,
+    private chatService: ChatServiceInterface,
   ) { }
 
-  @Post()
+  @Post('/private')
   async createPrivateChat(@Body() privateChatDto: PrivateChatDto,): Promise<Chat> {
-      const chat = await this.privateChatService.createPrivateChat(privateChatDto);
-      return chat;
+    const chat = await this.chatService.createPrivateChat(privateChatDto);
+    return chat;
+  }
+
+  @Post('/public')
+  async createPublicChat(@Body() publicChatDto: PublicChatDto,): Promise<Chat> {
+    const chat = await this.chatService.createPublicChat(publicChatDto);
+    return chat;
   }
 
   @Delete(':chatId/:userId')
@@ -25,7 +31,7 @@ export class PrivateChatController {
     @Res() res: Response,
   ): Promise<void> {
     try {
-      const deletedChat = await this.privateChatService.deleteConversation(chatId, userId);
+      const deletedChat = await this.chatService.deleteChat(chatId, userId);
       res.status(HttpStatus.OK).json(deletedChat);
     } catch (error) {
       res
@@ -40,7 +46,7 @@ export class PrivateChatController {
     @Res() res: Response,
   ): Promise<void> {
     try {
-      const chat = await this.privateChatService.getPrivateChatById(chatId);
+      const chat = await this.chatService.getChatById(chatId);
       if (!chat) {
         res.status(HttpStatus.NOT_FOUND).json({ message: 'Chat not found' });
       } else {
@@ -60,7 +66,7 @@ export class PrivateChatController {
     @Res() res: Response,
   ): Promise<void> {
     try {
-      const updatedChat = await this.privateChatService.updatePrivateChat(chatId, updatedData);
+      const updatedChat = await this.chatService.updateChat(chatId, updatedData);
       res.status(HttpStatus.OK).json(updatedChat);
     } catch (error) {
       res

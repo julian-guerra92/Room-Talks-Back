@@ -3,14 +3,26 @@ import { HttpException, Injectable, Logger, NotFoundException } from '@nestjs/co
 import { DataServiceInterface } from 'src/data-service/interface/data-service.interface';
 import { Chat } from 'src/data-service/models/chat';
 import { User } from 'src/data-service/models/user';
-import { PrivateChatServiceInterface } from './interface/private-chat.interface';
-import { PrivateChatDto } from './dto/private-chat.dto';
+import { ChatServiceInterface } from './interface/chat.interface';
+import { PrivateChatDto, PublicChatDto } from './dto/chat.dto';
 
 @Injectable()
-export class PrivateChatServiceAdapter implements PrivateChatServiceInterface {
+export class ChatServiceAdapter implements ChatServiceInterface {
 
   logger: Logger = new Logger('PrivateChatServiceAdapter');
   constructor(private readonly dataService: DataServiceInterface) { }
+
+  async getChatById(chatId: string): Promise<Chat> {
+    let chat: Chat = null;
+    try {
+      chat = await this.dataService.chats.getById(chatId);
+      this.logger.log('Chat obtenido correctamente.')
+    } catch (error) {
+      this.logger.error('Error getting chat by id');
+      this.logger.error(error);
+    }
+    return chat;
+  }
 
   async createPrivateChat(privateChatDto: PrivateChatDto): Promise<Chat> {
     const { senderUserId, receiverUserId } = privateChatDto;
@@ -23,17 +35,19 @@ export class PrivateChatServiceAdapter implements PrivateChatServiceInterface {
         throw new NotFoundException('Sender or receiver user not found');
       }
 
-      //TODO: Validar si el chat de estos usuarios ya existe
-      
-      const newChat: Chat = {
-        name: `${senderUser.name} / ${reciverUser.name}`,
-        type: 'private',
-        participants: [senderUser, reciverUser],
-      };
+      const chatName = `${senderUser.name} / ${reciverUser.name}`;
+      let chat = await this.dataService.chats.getchatByName(chatName);
 
-      const createdChat = await this.dataService.chats.add(newChat);
-      return createdChat;
-      
+      if (!chat) {
+        const newChat: Chat = {
+          name: chatName,
+          type: 'private',
+          participants: [senderUser, reciverUser],
+        };
+        chat = await this.dataService.chats.add(newChat);
+      }
+      return chat;
+
     } catch (error) {
       this.logger.error('Error creating private chat');
       this.logger.error(error);
@@ -45,7 +59,33 @@ export class PrivateChatServiceAdapter implements PrivateChatServiceInterface {
     }
   }
 
-  async deleteConversation(chatId: string, userId: string): Promise<void> {
+  async createPublicChat(publicChatDto: PublicChatDto): Promise<Chat> {
+    const { name, description, referenceImage } = publicChatDto;
+    try {
+      let chat = await this.dataService.chats.getchatByName(name);
+      if (!chat) {
+        const newChat: Chat = {
+          name,
+          description,
+          referenceImage,
+          type: 'public',
+          participants: [],
+        };
+        chat = await this.dataService.chats.add(newChat);
+      }
+      return chat;
+    } catch (error) {
+      this.logger.error('Error creating public chat');
+      this.logger.error(error);
+      throw new HttpException({
+        statusCode: error.response.statusCode,
+        error: 'Error creating public chat',
+        message: error.message
+      }, error.response.statusCode);
+    }
+  }
+
+  async deleteChat(chatId: string, userId: string): Promise<void> {
     const chat = await this.dataService.chats.getById(chatId);
 
     if (!chat) {
@@ -63,12 +103,9 @@ export class PrivateChatServiceAdapter implements PrivateChatServiceInterface {
     await this.dataService.chats.deleteById(chatId);
   }
 
-  async getPrivateChatById(chatId: string): Promise<Chat> {
-    const chat = await this.dataService.chats.getById(chatId);
-    return chat;
-  }
 
-  async updatePrivateChat(chatId: string, updatedData: Partial<Chat>): Promise<Chat> {
+
+  async updateChat(chatId: string, updatedData: Partial<Chat>): Promise<Chat> {
     const chat = await this.dataService.chats.getById(chatId);
 
     if (!chat) {
