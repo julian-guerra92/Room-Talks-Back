@@ -16,17 +16,19 @@ export class MessageServiceAdapter implements MessageServiceInterface {
 
   async saveMessage(messageDto: MessageDto,): Promise<Message> {
     this.logger.log('Iniciando proceso saveMessage');
+    let createdMessage: Message; 
     try {
       const chat = await this.dataService.chats.getById(messageDto.IdChat);
       if (!chat) {
         throw new NotFoundException('Chat not found');
       }
-      const createdMessage = await this.dataService.messages.add(messageDto);
+      createdMessage = await this.dataService.messages.add(messageDto);
       this.logger.log('Mensaje almacendo con éxito: ', createdMessage);
-      return createdMessage;
     } catch (error) {
       this.logger.error('Error en saveMessage', error);
+      this.logger.error(error);
     }
+    return createdMessage;
   }
 
   async getMessagesByChat(chatId: string): Promise<MessageDto[]> {
