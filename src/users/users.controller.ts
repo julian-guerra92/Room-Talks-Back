@@ -2,6 +2,7 @@ import { Body, Controller, Get, Put, Query, BadRequestException, UseInterceptors
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { UsersServiceInterface } from "./interface/users-service";
 import { FileInterceptor } from "@nestjs/platform-express/multer";
+import { UpdatePasswordDto } from "./dto/update-password.dto";
 
 
 @Controller('users')
@@ -35,4 +36,9 @@ export class UsersController {
       }),
   )
   file: Express.Multer.File) { return this.usersService.updateUser(updateUser, file); }
+
+  @Put('update-password')
+  updatePassword(@Body() updatePassword: UpdatePasswordDto){
+    return this.usersService.updatePassword(updatePassword);
+  }
 }

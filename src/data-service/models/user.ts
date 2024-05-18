@@ -23,7 +23,7 @@ export class User {
    @Prop()
    password: string;
 
-   @Prop({ type: String, enum: UserRole, default: User})
+   @Prop({ type: String, enum: UserRole, default: UserRole.User})
    role: UserRole;
 
    @Prop()
