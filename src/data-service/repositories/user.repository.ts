@@ -2,7 +2,7 @@ import { Model } from "mongoose";
 import { InternalServerErrorException } from "@nestjs/common";
 import { CreateUserDto } from "src/auth/dto/create-user.dto"
 import { UserRepositoryInterface } from "../interface/user-repository.interface";
-import { User } from "../models/user";
+import { User, UserRole } from "../models/user";
 import { MongoGenericRespository } from "./mongo-generic-repository";
 
 
@@ -34,10 +34,10 @@ export class UserRepository extends MongoGenericRespository<User> implements Use
       }
    }
 
-   async updateByEmail(email: string, entity: CreateUserDto): Promise<User> {
+   async updateByEmail(email: string, entity: CreateUserDto, image: Express.Multer.File): Promise<User> {
       try {
-         const user = await this.repository.findOneAndUpdate({ email: email }, entity);
-         return user;
+         const user = new User(entity.name, entity.email, entity.address, entity.password, UserRole.User, image.buffer)
+         return await this.repository.findOneAndUpdate({ email: email }, user);
       } catch (error) {
          this.logger.log(error);
          this.logger.error(`Error to update user by email`, '');

@@ -1,14 +1,15 @@
-import { Body, Controller, Get, Put, Query, BadRequestException} from "@nestjs/common";
+import { Body, Controller, Get, Put, Query, BadRequestException, UseInterceptors, UploadedFile, ParseFilePipeBuilder, HttpStatus } from "@nestjs/common";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { UsersServiceInterface } from "./interface/users-service";
+import { FileInterceptor } from "@nestjs/platform-express/multer";
 
 
 @Controller('users')
 export class UsersController {
 
-   constructor(private usersService: UsersServiceInterface) { }
+  constructor(private usersService: UsersServiceInterface) { }
 
-   @Get()
+  @Get()
   async getUser(@Query('id') id?: string, @Query('email') email?: string) {
     if (id) {
       return this.usersService.getUserById(id);
@@ -19,9 +20,19 @@ export class UsersController {
     }
   }
 
-   @Put('update')
-   updateUser(@Body() updateUser: UpdateUserDto) {
-      return this.usersService.updateUser(updateUser);
-   }
-
+  @Put('update')
+  @UseInterceptors(FileInterceptor('file'))
+  updateUser(@Body() updateUser: UpdateUserDto, @UploadedFile(
+    new ParseFilePipeBuilder()
+      .addFileTypeValidator({
+        fileType: 'jpeg'
+      })
+      .addMaxSizeValidator({
+        maxSize: 13000
+      })
+      .build({
+        errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY
+      }),
+  )
+  file: Express.Multer.File) { return this.usersService.updateUser(updateUser, file); }
 }

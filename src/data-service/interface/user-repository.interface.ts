@@ -5,6 +5,6 @@ import { GenericRepositoryInterface } from "./generic-repository.interface";
 
 export interface UserRepositoryInterface extends GenericRepositoryInterface<User> {
    getByEmail(email: string): Promise<User>;
-   updateByEmail(email: string, entity: CreateUserDto): Promise<User>;
+   updateByEmail(email: string, entity: CreateUserDto, image: Express.Multer.File): Promise<User>;
    getById(id: string): Promise<User>;
 }

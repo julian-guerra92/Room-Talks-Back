@@ -15,19 +15,16 @@ export class UsersServiceAdapter implements UsersServiceInterface {
 
    async getUserByEmail(email: string): Promise<User> {
       this.logger.log(`Getting user: ${email}`);
-      const user = await this.dataService.users.getByEmail(email);
-      return user;
+      return await this.dataService.users.getByEmail(email);
    }
 
    async getUserById(id: string): Promise<User> {
       this.logger.log(`Getting user: ${id}`);
-      const user = await this.dataService.users.getById(id);
-      return user;
+      return await this.dataService.users.getById(id);
    }
 
-   async updateUser(entity: UpdateUserDto): Promise<User> {
+   async updateUser(entity: UpdateUserDto, image: Express.Multer.File): Promise<User> {
       this.logger.log(`Updating user: ${entity.name}`);
-      const user = await this.dataService.users.updateByEmail(entity.email, entity);
-      return user;
+      return await this.dataService.users.updateByEmail(entity.email, entity, image);
    }
 }

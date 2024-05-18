@@ -26,18 +26,23 @@ export class User {
    @Prop({ type: String, enum: UserRole, default: User})
    role: UserRole;
 
+   @Prop()
+   image?: Buffer;
+
    constructor(
       name: string,
       email: string,
       address: string,
       password: string,
-      role: UserRole
+      role: UserRole,
+      image?: Buffer 
     ) {
       this.name = name;
       this.email = email;
       this.address = address;
       this.password = password;
       this.role = role;
+      this.image = image;
     }
 }
 
