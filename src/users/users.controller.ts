@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Put} from "@nestjs/common";
+import { Body, Controller, Get, Put, Query, BadRequestException} from "@nestjs/common";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { UsersServiceInterface } from "./interface/users-service";
 
@@ -8,11 +8,17 @@ export class UsersController {
 
    constructor(private usersService: UsersServiceInterface) { }
 
-   @Get('/:email')
-   getUser(@Param('email') email) {
-      return this.usersService.getUser(email);
-   }
-   
+   @Get()
+  async getUser(@Query('id') id?: string, @Query('email') email?: string) {
+    if (id) {
+      return this.usersService.getUserById(id);
+    } else if (email) {
+      return this.usersService.getUserByEmail(email);
+    } else {
+      throw new BadRequestException('Either id or email must be provided');
+    }
+  }
+
    @Put('update')
    updateUser(@Body() updateUser: UpdateUserDto) {
       return this.usersService.updateUser(updateUser);

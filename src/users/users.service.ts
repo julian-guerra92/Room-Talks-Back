@@ -13,9 +13,15 @@ export class UsersServiceAdapter implements UsersServiceInterface {
       private readonly dataService: DataServiceInterface
    ) { }
 
-   async getUser(email: string): Promise<User> {
+   async getUserByEmail(email: string): Promise<User> {
       this.logger.log(`Getting user: ${email}`);
       const user = await this.dataService.users.getByEmail(email);
+      return user;
+   }
+
+   async getUserById(id: string): Promise<User> {
+      this.logger.log(`Getting user: ${id}`);
+      const user = await this.dataService.users.getById(id);
       return user;
    }
 

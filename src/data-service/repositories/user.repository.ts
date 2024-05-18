@@ -23,6 +23,17 @@ export class UserRepository extends MongoGenericRespository<User> implements Use
       }
    }
 
+   async getById(id: string): Promise<User> {
+      try {
+         const document = await this.repository.findById(id);
+         return document;
+      } catch (error) {
+         this.logger.log(error);
+         this.logger.error(`Error to get user by id`, '');
+         throw new InternalServerErrorException('Error to get information from database.');
+      }
+   }
+
    async updateByEmail(email: string, entity: CreateUserDto): Promise<User> {
       try {
          const user = await this.repository.findOneAndUpdate({ email: email }, entity);
