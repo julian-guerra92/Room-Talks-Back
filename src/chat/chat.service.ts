@@ -1,16 +1,20 @@
-import { HttpException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, HttpException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 
 import { DataServiceInterface } from 'src/data-service/interface/data-service.interface';
 import { Chat } from 'src/data-service/models/chat';
 import { User } from 'src/data-service/models/user';
 import { ChatServiceInterface } from './interface/chat.interface';
 import { PrivateChatDto, PublicChatDto } from './dto/chat.dto';
+import { ImageHandlerInterface } from 'src/image-handler/interface/image-hanlder';
 
 @Injectable()
 export class ChatServiceAdapter implements ChatServiceInterface {
 
-  logger: Logger = new Logger('PrivateChatServiceAdapter');
-  constructor(private readonly dataService: DataServiceInterface) { }
+  logger: Logger = new Logger(ChatServiceAdapter.name);
+  constructor(
+    private readonly dataService: DataServiceInterface,
+    private readonly imageHandlerService: ImageHandlerInterface,
+  ) { }
 
   async getChatById(chatId: string): Promise<Chat> {
     let chat: Chat = null;
@@ -59,22 +63,38 @@ export class ChatServiceAdapter implements ChatServiceInterface {
     }
   }
 
-  async createPublicChat(publicChatDto: PublicChatDto): Promise<Chat> {
-    const { name, description, referenceImage } = publicChatDto;
+  async createPublicChat(publicChatDto: PublicChatDto, image: Express.Multer.File): Promise<Chat> {
+    this.logger.log('Creating public chat');
+    const { name, description } = publicChatDto;
+    if (!image) {
+      throw new BadRequestException('Image is required');
+    }
     try {
-      let chat = await this.dataService.chats.getchatByName(name);
-      if (!chat) {
-        const newChat: Chat = {
-          name,
-          description,
-          referenceImage,
-          type: 'public',
-          participants: [],
-        };
-        chat = await this.dataService.chats.add(newChat);
+      const chat = await this.dataService.chats.getchatByName(name);
+      if (chat) {
+        throw new BadRequestException(`Chat with name ${name} already exists`);
       }
-      return chat;
+
+      const imageHanlderResponse = await this.imageHandlerService.uploadImage(image);
+      if (imageHanlderResponse.error) {
+        throw new Error(imageHanlderResponse.error);
+      }
+      this.logger.log('Image uploaded successfully');
+      this.logger.log(JSON.stringify(imageHanlderResponse, null, 2));
+      const referenceImage = imageHanlderResponse.url;
+
+      const chatData: Chat = {
+        name,
+        description,
+        referenceImage,
+        type: 'public',
+        participants: [],
+      };
+      const newChat = await this.dataService.chats.add(chatData);
+      return newChat;
+      
     } catch (error) {
+
       this.logger.error('Error creating public chat');
       this.logger.error(error);
       throw new HttpException({
@@ -82,6 +102,7 @@ export class ChatServiceAdapter implements ChatServiceInterface {
         error: 'Error creating public chat',
         message: error.message
       }, error.response.statusCode);
+
     }
   }
 

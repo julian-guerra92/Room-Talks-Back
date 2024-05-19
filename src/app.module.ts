@@ -7,6 +7,7 @@ import { PrivateChatModule } from './chat/chat.module';
 import { UsersModule } from './users/users.module';
 import { EventsModule } from './events/events.module';
 import { MessageModule } from './message/message.module';
+import { ImageHanlderModule } from './image-handler/image-handler.module';
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { MessageModule } from './message/message.module';
     PrivateChatModule,
     UsersModule,
     MessageModule,
-    EventsModule
+    EventsModule,
+    ImageHanlderModule,
   ],
 })
 export class AppModule { }

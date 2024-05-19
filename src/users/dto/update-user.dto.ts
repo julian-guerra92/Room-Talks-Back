@@ -1,7 +1,7 @@
 import { IsEmail, IsNotEmpty, IsString, IsStrongPassword } from "class-validator";
 
 
-export class CreateUserDto {
+export class UpdateUserDto {
 
    @IsString()
    @IsNotEmpty()
@@ -26,6 +26,4 @@ export class CreateUserDto {
       }
    )
    password: string;
-
-   
 }

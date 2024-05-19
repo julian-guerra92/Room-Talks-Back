@@ -18,8 +18,4 @@ export class PublicChatDto {
    @IsString()
    @IsNotEmpty()
    description: string;
-
-   @IsUrl()
-   @IsNotEmpty()
-   referenceImage: string;
 }

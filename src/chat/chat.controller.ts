@@ -1,10 +1,11 @@
-import { Controller, Post, Body, Param, Res, HttpStatus, Delete, Get, Put } from '@nestjs/common';
+import { Controller, Post, Body, Param, Res, HttpStatus, Delete, Get, Put, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { Response } from 'express';
 
 import { User } from 'src/data-service/models/user';
 import { Chat } from 'src/data-service/models/chat';
 import { ChatServiceInterface } from './interface/chat.interface';
 import { PrivateChatDto, PublicChatDto } from './dto/chat.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('chat')
 export class ChatController {
@@ -19,8 +20,12 @@ export class ChatController {
   }
 
   @Post('/public')
-  async createPublicChat(@Body() publicChatDto: PublicChatDto,): Promise<Chat> {
-    const chat = await this.chatService.createPublicChat(publicChatDto);
+  @UseInterceptors(FileInterceptor('file'))
+  async createPublicChat(
+    @Body() publicChatDto: PublicChatDto,
+    @UploadedFile() image: Express.Multer.File
+  ): Promise<Chat> {
+    const chat = await this.chatService.createPublicChat(publicChatDto, image);
     return chat;
   }
 
