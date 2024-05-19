@@ -10,24 +10,26 @@ import { UnauthorizedException } from '@nestjs/common';
 @Injectable()
 export class AuthServiceAdapter implements AuthServiceInterface {
 
-   private readonly logger: Logger = new Logger(AuthServiceAdapter.name);
+  private readonly logger: Logger = new Logger(AuthServiceAdapter.name);
+  private readonly defaultImage = 'https://res.cloudinary.com/dq0yax1nl/image/upload/v1716149891/RoomTalks/%EF%B8%8F_vmhc0h.jpg';
 
-   constructor(
-      private readonly dataService: DataServiceInterface
-   ) { }
+  constructor(
+    private readonly dataService: DataServiceInterface
+  ) { }
 
 
-   async createUser(createUser: CreateUserDto): Promise<User> {
-      this.logger.log(`Creating user: ${createUser.name}`);
-      const user = new User(
-        createUser.name,
-        createUser.email,
-        createUser.address,
-        createUser.password,
-        UserRole.User
-      );
-      return await this.dataService.users.add(user);
-   }
+  async createUser(createUser: CreateUserDto): Promise<User> {
+    this.logger.log(`Creating user: ${createUser.name}`);
+    const user: User = {
+      name: createUser.name,
+      email: createUser.email,
+      address: createUser.address,
+      password: createUser.password,
+      role: UserRole.User,
+      image: this.defaultImage
+    }
+    return await this.dataService.users.add(user);
+  }
 
   async signIn(email: string, pass: string): Promise<User> {
     const user = await this.dataService.users.getByEmail(email);

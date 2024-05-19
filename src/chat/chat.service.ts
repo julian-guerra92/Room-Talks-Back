@@ -24,6 +24,11 @@ export class ChatServiceAdapter implements ChatServiceInterface {
     } catch (error) {
       this.logger.error('Error getting chat by id');
       this.logger.error(error);
+      throw new HttpException({
+        statusCode: error.response.statusCode,
+        error: 'Error getting chat by id',
+        message: error.message
+      }, error.response.statusCode);
     }
     return chat;
   }
@@ -75,14 +80,7 @@ export class ChatServiceAdapter implements ChatServiceInterface {
         throw new BadRequestException(`Chat with name ${name} already exists`);
       }
 
-      const imageHanlderResponse = await this.imageHandlerService.uploadImage(image);
-      if (imageHanlderResponse.error) {
-        throw new Error(imageHanlderResponse.error);
-      }
-      this.logger.log('Image uploaded successfully');
-      this.logger.log(JSON.stringify(imageHanlderResponse, null, 2));
-      const referenceImage = imageHanlderResponse.url;
-
+      const referenceImage = await this.uploadImage(image);
       const chatData: Chat = {
         name,
         description,
@@ -92,9 +90,8 @@ export class ChatServiceAdapter implements ChatServiceInterface {
       };
       const newChat = await this.dataService.chats.add(chatData);
       return newChat;
-      
-    } catch (error) {
 
+    } catch (error) {
       this.logger.error('Error creating public chat');
       this.logger.error(error);
       throw new HttpException({
@@ -108,36 +105,53 @@ export class ChatServiceAdapter implements ChatServiceInterface {
 
   async deleteChat(chatId: string, userId: string): Promise<void> {
     const chat = await this.dataService.chats.getById(chatId);
-
     if (!chat) {
       throw new NotFoundException('Chat not found');
     }
-
     const isParticipant = chat.participants.some(
       (participant) => participant.email === userId,
     );
-
     if (!isParticipant) {
       throw new NotFoundException('User is not a participant of the chat.');
     }
-
     await this.dataService.chats.deleteById(chatId);
   }
 
+  async updateChat(chatId: string, updatedData: Partial<Chat>, image: Express.Multer.File): Promise<Chat> {
+    this.logger.log('Updating chat');
+    try {
+      const chat = await this.dataService.chats.getById(chatId);
+      if (!chat) {
+        throw new NotFoundException('Chat not found');
+      }
+      if (image) {
+        await this.imageHandlerService.deleteImage(chat.referenceImage);
+        updatedData.referenceImage = await this.uploadImage(image);
+      }
+      Object.assign(chat, updatedData);
+      const updatedChat = await this.dataService.chats.updateById(chatId, chat);
+      return updatedChat;
 
-
-  async updateChat(chatId: string, updatedData: Partial<Chat>): Promise<Chat> {
-    const chat = await this.dataService.chats.getById(chatId);
-
-    if (!chat) {
-      throw new NotFoundException('Chat not found');
+    } catch (error) {
+      this.logger.error('Error updating chat');
+      this.logger.error(error);
+      throw new HttpException({
+        statusCode: error.response.statusCode,
+        error: 'Error updating chat',
+        message: error.message
+      }, error.response.statusCode);
     }
-
-    // Actualizar los datos del chat con los datos actualizados
-    Object.assign(chat, updatedData);
-
-    // Guardar el chat actualizado
-    const updatedChat = await this.dataService.chats.updateById(chatId, chat);
-    return updatedChat;
   }
+
+  private async uploadImage(image: Express.Multer.File): Promise<string> {
+    this.logger.log('Uploading image');
+    const imageHandlerResponse = await this.imageHandlerService.uploadImage(image);
+    if (imageHandlerResponse.error) {
+      throw new Error(imageHandlerResponse.error);
+    }
+    this.logger.log('Image uploaded successfully');
+    this.logger.log(JSON.stringify(imageHandlerResponse, null, 2));
+    return imageHandlerResponse.url;
+  }
+
 }

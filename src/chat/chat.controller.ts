@@ -65,13 +65,15 @@ export class ChatController {
   }
 
   @Put(':chatId')
+  @UseInterceptors(FileInterceptor('file'))
   async updatePrivateChat(
     @Param('chatId') chatId: string,
     @Body() updatedData: Partial<Chat>,
+    @UploadedFile() image: Express.Multer.File,
     @Res() res: Response,
   ): Promise<void> {
     try {
-      const updatedChat = await this.chatService.updateChat(chatId, updatedData);
+      const updatedChat = await this.chatService.updateChat(chatId, updatedData, image);
       res.status(HttpStatus.OK).json(updatedChat);
     } catch (error) {
       res

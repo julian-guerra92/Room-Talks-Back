@@ -6,7 +6,7 @@ import { UpdateUserDto } from "src/users/dto/update-user.dto";
 
 export interface UserRepositoryInterface extends GenericRepositoryInterface<User> {
    getByEmail(email: string): Promise<User>;
-   updateByEmail(email: string, entity: UpdateUserDto, image: Express.Multer.File): Promise<User>;
+   updateByEmail(email: string, user: User): Promise<User>;
    getById(id: string): Promise<User>;
    updatePassword(id: string, entity: UpdatePasswordDto): Promise<User>;
 }
