@@ -23,27 +23,11 @@ export class User {
    @Prop()
    password: string;
 
-   @Prop({ type: String, enum: UserRole, default: UserRole.User})
+   @Prop({ type: String, enum: UserRole, default: UserRole.User })
    role: UserRole;
 
    @Prop()
-   image?: Buffer;
-
-   constructor(
-      name: string,
-      email: string,
-      address: string,
-      password: string,
-      role: UserRole,
-      image?: Buffer 
-    ) {
-      this.name = name;
-      this.email = email;
-      this.address = address;
-      this.password = password;
-      this.role = role;
-      this.image = image;
-    }
+   image?: String;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

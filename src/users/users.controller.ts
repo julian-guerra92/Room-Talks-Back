@@ -3,6 +3,7 @@ import { UpdateUserDto } from "./dto/update-user.dto";
 import { UsersServiceInterface } from "./interface/users-service";
 import { FileInterceptor } from "@nestjs/platform-express/multer";
 import { UpdatePasswordDto } from "./dto/update-password.dto";
+import { User } from "src/data-service/models";
 
 
 @Controller('users')
@@ -23,22 +24,15 @@ export class UsersController {
 
   @Put('update')
   @UseInterceptors(FileInterceptor('file'))
-  updateUser(@Body() updateUser: UpdateUserDto, @UploadedFile(
-    new ParseFilePipeBuilder()
-      .addFileTypeValidator({
-        fileType: 'jpeg'
-      })
-      .addMaxSizeValidator({
-        maxSize: 13000
-      })
-      .build({
-        errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY
-      }),
-  )
-  file: Express.Multer.File) { return this.usersService.updateUser(updateUser, file); }
+  updateUser(
+    @Body() updateUser: UpdateUserDto,
+    @UploadedFile() file: Express.Multer.File
+  ): Promise<User> {
+    return this.usersService.updateUser(updateUser, file);
+  }
 
   @Put('update-password')
-  updatePassword(@Body() updatePassword: UpdatePasswordDto){
+  updatePassword(@Body() updatePassword: UpdatePasswordDto) {
     return this.usersService.updatePassword(updatePassword);
   }
 }
