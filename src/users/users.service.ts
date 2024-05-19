@@ -5,6 +5,7 @@ import { User } from "src/data-service/models/user";
 import { DataServiceInterface } from "src/data-service/interface/data-service.interface";
 import { UpdatePasswordDto } from "./dto/update-password.dto";
 import { ImageHandlerInterface } from "src/image-handler/interface/image-hanlder";
+import { getDefaultImage } from "src/utils/default-image";
 
 @Injectable()
 export class UsersServiceAdapter implements UsersServiceInterface {
@@ -34,7 +35,11 @@ export class UsersServiceAdapter implements UsersServiceInterface {
             throw new NotFoundException(`User with email ${entity.email} not found`);
          }
          if (image) {
-            this.logger.log('Imgae provided for update');
+            this.logger.log('Image provided for update');
+            const defaultImage = getDefaultImage();
+            if (user.image !== defaultImage) {
+               await this.imageHandlerService.deleteImage(user.image);
+            }
             entity.image = await this.uploadImage(image);
          }
          Object.assign(user, entity);

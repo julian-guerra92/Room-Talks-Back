@@ -23,9 +23,11 @@ export class ImageHandlerAdapter implements ImageHandlerInterface {
 
    async deleteImage(imageUrl: string): Promise<void> {
       this.logger.log('Iniciando proceso deleteImage');
+      this.logger.log(`imageUrl: ${imageUrl}`);
       return new Promise((resolve, reject) => {
          const publicId = imageUrl.split('/').pop().split('.')[0];
-         cloudinary.uploader.destroy(publicId, (error, result) => {
+         console.log(publicId);
+         cloudinary.uploader.destroy(`RoomTalks/${publicId}`, (error, result) => {
             if (error) return reject(error);
             resolve();
          });
