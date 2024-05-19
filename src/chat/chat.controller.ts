@@ -1,7 +1,6 @@
 import { Controller, Post, Body, Param, Res, HttpStatus, Delete, Get, Put, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { Response } from 'express';
 
-import { User } from 'src/data-service/models/user';
 import { Chat } from 'src/data-service/models/chat';
 import { ChatServiceInterface } from './interface/chat.interface';
 import { PrivateChatDto, PublicChatDto } from './dto/chat.dto';
@@ -43,6 +42,12 @@ export class ChatController {
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .json({ error: error.message });
     }
+  }
+
+  @Get('/public')
+  async getAllPublicChats(): Promise<Chat[]> {
+    const chats = await this.chatService.getAllPublicChats();
+    return chats;
   }
 
   @Get(':chatId')

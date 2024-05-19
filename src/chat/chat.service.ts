@@ -33,6 +33,24 @@ export class ChatServiceAdapter implements ChatServiceInterface {
     return chat;
   }
 
+  async getAllPublicChats(): Promise<Chat[]> {
+    this.logger.log('Getting all public chats');
+    let publicChats: Chat[] = [];
+    try {
+      publicChats = (await this.dataService.chats.getAll()).filter(chat => chat.type === 'public');
+      this.logger.log('Chats obtenidos correctamente.')
+    } catch (error) {
+      this.logger.error('Error getting all chats');
+      this.logger.error(error);
+      throw new HttpException({
+        statusCode: error.response.statusCode,
+        error: 'Error getting all chats',
+        message: error.message
+      }, error.response.statusCode);
+    }
+    return publicChats;
+  }
+
   async createPrivateChat(privateChatDto: PrivateChatDto): Promise<Chat> {
     const { senderUserId, receiverUserId } = privateChatDto;
     try {
