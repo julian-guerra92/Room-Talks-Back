@@ -4,6 +4,8 @@ import { CreateUserDto } from "src/auth/dto/create-user.dto"
 import { UserRepositoryInterface } from "../interface/user-repository.interface";
 import { User, UserRole } from "../models/user";
 import { MongoGenericRespository } from "./mongo-generic-repository";
+import { UpdateUserDto } from "src/users/dto/update-user.dto";
+import { UpdatePasswordDto } from "src/users/dto/update-password.dto";
 
 
 export class UserRepository extends MongoGenericRespository<User> implements UserRepositoryInterface {
@@ -34,13 +36,23 @@ export class UserRepository extends MongoGenericRespository<User> implements Use
       }
    }
 
-   async updateByEmail(email: string, entity: CreateUserDto, image: Express.Multer.File): Promise<User> {
+   async updateByEmail(email: string, entity: UpdateUserDto, image: Express.Multer.File): Promise<User> {
       try {
-         const user = new User(entity.name, entity.email, entity.address, entity.password, UserRole.User, image.buffer)
-         return await this.repository.findOneAndUpdate({ email: email }, user);
+         return await this.repository.findOneAndUpdate({ email: email }, {$set: entity}, {new: true});
       } catch (error) {
          this.logger.log(error);
          this.logger.error(`Error to update user by email`, '');
+         throw new InternalServerErrorException('Error to update information in database.');
+      }
+   }
+
+   async updatePassword(id: string, entity: UpdatePasswordDto): Promise<User> {
+      try {
+         const update = { ["password"]: entity.newPassword };
+         return await this.repository.findByIdAndUpdate(id, {$set: update}, {new: true});
+      } catch (error) {
+         this.logger.log(error);
+         this.logger.error(`Error to update your password`, '');
          throw new InternalServerErrorException('Error to update information in database.');
       }
    }

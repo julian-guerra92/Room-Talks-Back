@@ -29,8 +29,6 @@ export class AuthServiceAdapter implements AuthServiceInterface {
       return await this.dataService.users.add(user);
    }
 
-   
-
   async signIn(email: string, pass: string): Promise<User> {
     const user = await this.dataService.users.getByEmail(email);
     if (user?.password !== pass) {
