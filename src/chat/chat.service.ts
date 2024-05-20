@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { BadRequestException, HttpException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 
 import { DataServiceInterface } from 'src/data-service/interface/data-service.interface';
@@ -31,6 +32,24 @@ export class ChatServiceAdapter implements ChatServiceInterface {
       }, error.response.statusCode);
     }
     return chat;
+  }
+
+  async getAllPrivateChats(): Promise<Chat[]> {
+    this.logger.log('Getting all private chats');
+    let privateChats: Chat[] = [];
+    try {
+      privateChats = (await this.dataService.chats.getAll()).filter(chat => chat.type === 'private');
+      this.logger.log('Private chats obtained successfully.');
+    } catch (error) {
+      this.logger.error('Error getting all private chats');
+      this.logger.error(error);
+      throw new HttpException({
+        statusCode: error.response.statusCode,
+        error: 'Error getting all chats',
+        message: error.message
+      }, error.response.statusCode);
+    }
+    return privateChats;
   }
 
   async getAllPublicChats(): Promise<Chat[]> {
