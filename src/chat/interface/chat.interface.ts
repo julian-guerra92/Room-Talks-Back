@@ -6,6 +6,7 @@ export abstract class ChatServiceInterface {
    abstract createPublicChat(publicChatDto: PublicChatDto, image: Express.Multer.File): Promise<Chat>
    abstract deleteChat(chatId: string, userId: string): Promise<void>
    abstract getAllPublicChats(): Promise<Chat[]>
+   abstract getAllPrivateChats(): Promise<Chat[]>
    abstract getChatById(chatId: string): Promise<Chat>
    abstract updateChat(chatId: string, updatedData: Partial<Chat>, image: Express.Multer.File): Promise<Chat>
 

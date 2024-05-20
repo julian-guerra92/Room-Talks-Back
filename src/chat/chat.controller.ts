@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Controller, Post, Body, Param, Res, HttpStatus, Delete, Get, Put, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { Response } from 'express';
 
@@ -44,6 +45,12 @@ export class ChatController {
     }
   }
 
+  @Get('/private')
+  async getAllPrivateChats(): Promise<Chat[]> {
+    const chats = await this.chatService.getAllPrivateChats();
+    return chats;
+  }
+  
   @Get('/public')
   async getAllPublicChats(): Promise<Chat[]> {
     const chats = await this.chatService.getAllPublicChats();
