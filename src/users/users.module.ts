@@ -5,17 +5,18 @@ import { UsersServiceAdapter } from "./users.service";
 import { DataServiceModule } from "src/data-service/data-service.module";
 import { ImageHanlderModule } from 'src/image-handler/image-handler.module';
 
-const AuthService = {
+const UsersService = {
     provide: UsersServiceInterface,
     useClass: UsersServiceAdapter
 }
 
 @Module({
     controllers: [UsersController],
-    providers: [AuthService],
+    providers: [UsersService],
     imports: [
         DataServiceModule,
         ImageHanlderModule
-    ]
+    ],
+    exports: [UsersService]
 })
 export class UsersModule { }

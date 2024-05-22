@@ -17,6 +17,7 @@ import { ChatServiceInterface } from 'src/chat/interface/chat.interface';
 import { Chat } from 'src/data-service/models/chat';
 import { MessageServiceInterface } from 'src/message/interface/message-service';
 import { MessageDto } from 'src/message/dto/message.dto';
+import { UsersServiceInterface } from 'src/users/interface/users-service';
 
 @WebSocketGateway({ cors: true })
 export class EventsGateway implements OnModuleInit, OnGatewayConnection, OnGatewayDisconnect {
@@ -26,8 +27,9 @@ export class EventsGateway implements OnModuleInit, OnGatewayConnection, OnGatew
   logger: Logger = new Logger('EventsGateway');
 
   constructor(
-    private privateChatService: ChatServiceInterface,
-    private privateMesssageService: MessageServiceInterface
+    private chatService: ChatServiceInterface,
+    private messsageService: MessageServiceInterface,
+    private userService: UsersServiceInterface
   ) { }
 
   onModuleInit() {
@@ -36,11 +38,16 @@ export class EventsGateway implements OnModuleInit, OnGatewayConnection, OnGatew
     })
   }
 
-  handleConnection(client: Socket) {
-    const query: QueryConecctionDto = {
-      userId: client.handshake.query.userId as string
+  async handleConnection(client: Socket) {
+    const id = client.handshake.query.userId as string;
+    const user = await this.userService.getUserById(id);
+    if(!user) {
+      client.disconnect();
     }
-    //TODO: Validar si el usuario existe en DB
+    const query: QueryConecctionDto = {
+      userId: client.handshake.query.userId as string,
+      userName: user.name,
+    }
     client.data = query;
   }
 
@@ -52,7 +59,7 @@ export class EventsGateway implements OnModuleInit, OnGatewayConnection, OnGatew
   async handleEventChatConnection(@MessageBody() body: ChatConnectionRequestDto, @ConnectedSocket() socket: Socket): Promise<void> {
     let chat: Chat;
     let response: ChatConnectionResponseDto = { statusConnection: 'fail' };
-    chat = await this.privateChatService.getChatById(body.chatId);
+    chat = await this.chatService.getChatById(body.chatId);
     if (chat) {
       response = {
         statusConnection: 'success',
@@ -84,12 +91,13 @@ export class EventsGateway implements OnModuleInit, OnGatewayConnection, OnGatew
       timestamp: new Date()
     }
     let response: ChatMessageResponseDto = { status: 'fail' };
-    const result = await this.privateMesssageService.saveMessage(newMessage);
+    const result = await this.messsageService.saveMessage(newMessage);
     if (result) {
       response = {
         status: 'success',
         message: body.message,
         userId: socket.data.userId,
+        userName: socket.data.userName,
         chatId: socket.data.chatId
       }
     }

@@ -9,4 +9,5 @@ export interface ChatMessageResponseDto {
    message?: string;
    userId?: string;
    chatId?: string;
+   userName?: string;
 }
