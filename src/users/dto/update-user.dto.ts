@@ -4,7 +4,7 @@ import { IsEmail, IsNotEmpty, IsOptional, IsString, IsStrongPassword } from "cla
 export class UpdateUserDto {
 
    @IsString()
-   @IsNotEmpty()
+   @IsOptional()
    name: string;
 
    @IsEmail()
@@ -12,7 +12,7 @@ export class UpdateUserDto {
    email: string;
 
    @IsString()
-   @IsNotEmpty()
+   @IsOptional()
    address: string;
 
    @IsString()
