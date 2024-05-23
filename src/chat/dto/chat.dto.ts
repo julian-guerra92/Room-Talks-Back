@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString, IsUrl } from "class-validator";
+import { IsArray, IsNotEmpty, IsOptional, IsString, IsUrl } from "class-validator";
 
 export class PrivateChatDto {
    @IsString()
@@ -18,4 +18,12 @@ export class PublicChatDto {
    @IsString()
    @IsNotEmpty()
    description: string;
+}
+
+export class ParticipantsDto {
+
+   @IsArray()
+   @IsString({ each: true })
+   @IsNotEmpty()
+   participantsId: string[];
 }

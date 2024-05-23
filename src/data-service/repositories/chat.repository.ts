@@ -24,4 +24,21 @@ export class ChatRepository extends MongoGenericRespository<Chat> implements Cha
     }
   }
 
+  async getChatByIdParticipants(participantsId: string[]): Promise<Chat> {
+    try {
+      const chat = await this.repository.findOne({
+        'participants._id': {
+          $all: participantsId,
+        }
+      });
+      return chat;
+    } catch (error) {
+      this.logger.log(error);
+      this.logger.error(`Error al obtener chat por participants.`, '');
+      throw new InternalServerErrorException(
+        'Error al obtener chat por participants.',
+      );
+    }
+  }
+
 }

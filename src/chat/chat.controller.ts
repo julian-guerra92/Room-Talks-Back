@@ -4,7 +4,7 @@ import { Response } from 'express';
 
 import { Chat } from 'src/data-service/models/chat';
 import { ChatServiceInterface } from './interface/chat.interface';
-import { PrivateChatDto, PublicChatDto } from './dto/chat.dto';
+import { ParticipantsDto, PrivateChatDto, PublicChatDto } from './dto/chat.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('chat')
@@ -50,12 +50,20 @@ export class ChatController {
     const chats = await this.chatService.getAllPrivateChats();
     return chats;
   }
-  
+
   @Get('/public')
   async getAllPublicChats(): Promise<Chat[]> {
     const chats = await this.chatService.getAllPublicChats();
     return chats;
   }
+
+  @Get('/private/participants')
+  async getPrivateChatByParticipants(@Body() participants: ParticipantsDto): Promise<Chat> {
+    const { participantsId } = participants;
+    const chat = await this.chatService.getChatByIdParticipants(participantsId);
+    return chat;
+  }
+
 
   @Get(':chatId')
   async getPrivateChat(

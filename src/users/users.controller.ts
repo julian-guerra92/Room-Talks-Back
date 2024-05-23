@@ -21,6 +21,11 @@ export class UsersController {
       throw new BadRequestException('Either id or email must be provided');
     }
   }
+  
+  @Get('get-all')
+  getAllUsers(): Promise<User[]> {
+    return this.usersService.getAllUsers();
+  }
 
   @Put('update')
   @UseInterceptors(FileInterceptor('file'))

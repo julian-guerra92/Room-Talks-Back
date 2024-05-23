@@ -27,6 +27,11 @@ export class UsersServiceAdapter implements UsersServiceInterface {
       return await this.dataService.users.getById(id);
    }
 
+   async getAllUsers(): Promise<User[]> {
+      this.logger.log('Getting all users');
+      return await this.dataService.users.getAll();
+   }
+
    async updateUser(entity: UpdateUserDto, image: Express.Multer.File): Promise<User> {
       this.logger.log(`Updating user: ${entity.name}`);
       try {

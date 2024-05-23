@@ -52,6 +52,23 @@ export class ChatServiceAdapter implements ChatServiceInterface {
     return privateChats;
   }
 
+  async getChatByIdParticipants(participantsId: string[]): Promise<Chat> {
+    let chat: Chat = null;
+    try {
+      chat = await this.dataService.chats.getChatByIdParticipants(participantsId);
+      this.logger.log('Chat obtained successfully.');
+    } catch (error) {
+      this.logger.error('Error getting chat by participants');
+      this.logger.error(error);
+      throw new HttpException({
+        statusCode: error.response.statusCode,
+        error: 'Error getting chat by participants',
+        message: error.message
+      }, error.response.statusCode);
+    }
+    return chat;
+  }
+
   async getAllPublicChats(): Promise<Chat[]> {
     this.logger.log('Getting all public chats');
     let publicChats: Chat[] = [];
@@ -73,7 +90,6 @@ export class ChatServiceAdapter implements ChatServiceInterface {
   async createPrivateChat(privateChatDto: PrivateChatDto): Promise<Chat> {
     const { senderUserId, receiverUserId } = privateChatDto;
     try {
-      //TODO: Ajustar esta operación
       const senderUser = await this.dataService.users.getById(senderUserId);
       const reciverUser = await this.dataService.users.getById(receiverUserId);
 
@@ -82,7 +98,7 @@ export class ChatServiceAdapter implements ChatServiceInterface {
       }
 
       const chatName = `${senderUser.name} / ${reciverUser.name}`;
-      let chat = await this.dataService.chats.getchatByName(chatName);
+      let chat = await this.dataService.chats.getChatByIdParticipants([senderUserId, receiverUserId]);
 
       if (!chat) {
         const newChat: Chat = {

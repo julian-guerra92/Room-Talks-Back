@@ -12,7 +12,7 @@ export class MessageRepository extends MongoGenericRespository<Message> implemen
 
   async getMessagesByChatId(chatId: string): Promise<Message[]> {
     try {
-      const messages = await this.repository.find({ chatId });
+      const messages = await this.repository.find({ IdChat: chatId }).sort({ timestamp: 1 });
       return messages;
     } catch (error) {
       this.logger.log(error);

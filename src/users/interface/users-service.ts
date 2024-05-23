@@ -7,4 +7,5 @@ export abstract class UsersServiceInterface {
    abstract updatePassword(entity: UpdatePasswordDto): Promise<User>;
    abstract getUserByEmail(email: string): Promise<User>;
    abstract getUserById(id: string): Promise<User>;
+   abstract getAllUsers(): Promise<User[]>;
 }

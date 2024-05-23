@@ -1,4 +1,4 @@
-import { Controller, Get } from "@nestjs/common";
+import { Controller, Get, Param } from "@nestjs/common";
 import { MessageServiceInterface } from "./interface/message-service";
 
 
@@ -9,7 +9,7 @@ export class MessageController {
    constructor(private messageService: MessageServiceInterface) { }
 
    @Get('get-messages/:chatId')
-   getMessagesByChat(chatId: string) {
+   getMessagesByChat(@Param('chatId') chatId: string) {
       const messages = this.messageService.getMessagesByChat(chatId);
       return messages;
    }

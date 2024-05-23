@@ -8,6 +8,7 @@ export abstract class ChatServiceInterface {
    abstract getAllPublicChats(): Promise<Chat[]>
    abstract getAllPrivateChats(): Promise<Chat[]>
    abstract getChatById(chatId: string): Promise<Chat>
+   abstract getChatByIdParticipants(participantsId: string[]): Promise<Chat>
    abstract updateChat(chatId: string, updatedData: Partial<Chat>, image: Express.Multer.File): Promise<Chat>
 
 }
